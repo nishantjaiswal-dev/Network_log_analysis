@@ -6,7 +6,7 @@ venv/
 .pytest_cache/
 
 # Database (generated at runtime)
-backend/forensics.db
+backend/forensics.db*
 
 # Node / frontend
 frontend/node_modules/

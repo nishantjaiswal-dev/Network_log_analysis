@@ -4,11 +4,34 @@ import Icon from './Icon';
 import { formatFullDateTime } from '../format';
 import './EventDetailPanel.css';
 
-function Field({ label, value, mono, wide }) {
+function getTacticTag(reason = '') {
+  const text = reason.toLowerCase();
+  if (text.includes('admin') || text.includes('privilege') || text.includes('group')) return 'Privilege Escalation';
+  if (text.includes('encoded') || text.includes('command') || text.includes('powershell')) return 'Execution';
+  if (text.includes('logon') || text.includes('credential') || text.includes('password') || text.includes('failed')) return 'Credential Access';
+  if (text.includes('service') || text.includes('schedule') || text.includes('persist')) return 'Persistence';
+  if (text.includes('evasion') || text.includes('clear') || text.includes('tamper')) return 'Defense Evasion';
+  return null;
+}
+
+function Field({ label, value, mono, wide, onPivot }) {
   if (value === undefined || value === null || value === '') return null;
   return (
     <div className={`detail-field ${wide ? 'detail-field--wide' : ''}`}>
-      <dt className="detail-field__label">{label}</dt>
+      <dt className="detail-field__label">
+        <span>{label}</span>
+        {onPivot && (
+          <button
+            type="button"
+            className="pivot-btn"
+            onClick={() => onPivot(String(value))}
+            title={`Filter by ${label}: ${value}`}
+          >
+            <Icon name="crosshair" size={11} />
+            <span>Pivot</span>
+          </button>
+        )}
+      </dt>
       <dd className={`detail-field__value ${mono ? 'mono' : ''}`}>{value}</dd>
     </div>
   );
@@ -65,11 +88,7 @@ function Collapsible({ title, children, onCopy }) {
   );
 }
 
-// Note: the parent renders this with `key={event.id}` when an event is
-// selected, so a fresh component instance (and fresh collapse state)
-// is mounted whenever the selection changes - no effect needed to
-// reset state in response to a prop change.
-export default function EventDetailPanel({ event, loading, onClose }) {
+export default function EventDetailPanel({ event, loading, onClose, onPivot }) {
   const open = Boolean(event) || loading;
 
   useEffect(() => {
@@ -117,6 +136,10 @@ export default function EventDetailPanel({ event, loading, onClose }) {
   const reasons = event.analysis_reasons || [];
   const network = (ip, port) => (ip ? `${ip}${port ? ':' + port : ''}` : null);
 
+  // Compute breakdown points
+  const anomalyPts = event.anomaly_score != null ? Math.round(event.anomaly_score * 40) : 0;
+  const rulePts = event.risk_score != null ? Math.max(0, Math.round(event.risk_score) - anomalyPts) : 0;
+
   return (
     <>
       <div className="detail-backdrop" onClick={onClose} />
@@ -148,20 +171,32 @@ export default function EventDetailPanel({ event, loading, onClose }) {
                 <span>ML anomaly score</span>
                 <strong className="mono">{event.anomaly_score != null ? event.anomaly_score.toFixed(2) : '—'}<small>/1.00</small></strong>
               </div>
-              <p className="detail-scores__note">Risk = anomaly signal (up to 40 pts) + named, auditable rules.</p>
+              <div className="score-breakdown-bar" title={`Anomaly: ~${anomalyPts} pts, Rules: ~${rulePts} pts`}>
+                <span className="score-breakdown-bar__ml" style={{ width: `${anomalyPts}%` }} />
+                <span className="score-breakdown-bar__rules" style={{ width: `${rulePts}%` }} />
+              </div>
+              <p className="detail-scores__note">
+                Score composed of <strong>~{anomalyPts} pts</strong> ML anomaly signal + <strong>~{rulePts} pts</strong> rule heuristics.
+              </p>
             </div>
           </section>
 
           <section className="detail-section">
-            <h3 className="detail-section__title">Why flagged</h3>
+            <h3 className="detail-section__title">Why flagged & MITRE ATT&CK Mapping</h3>
             {reasons.length > 0 ? (
               <ul className="reason-list">
-                {reasons.map((r, i) => (
-                  <li key={i} className={r.startsWith('No significant') ? 'is-benign' : ''}>
-                    <Icon name={r.startsWith('No significant') ? 'check' : r.startsWith('High ML') ? 'sparkle' : 'alert'} size={14} />
-                    <span>{r}</span>
-                  </li>
-                ))}
+                {reasons.map((r, i) => {
+                  const tactic = getTacticTag(r);
+                  return (
+                    <li key={i} className={r.startsWith('No significant') ? 'is-benign' : ''}>
+                      <Icon name={r.startsWith('No significant') ? 'check' : r.startsWith('High ML') ? 'sparkle' : 'alert'} size={14} />
+                      <div className="reason-text-wrap">
+                        {tactic && <span className="detail-tactic-chip">{tactic}</span>}
+                        <span>{r}</span>
+                      </div>
+                    </li>
+                  );
+                })}
               </ul>
             ) : (
               <p className="reason-list__empty">Not analyzed yet — run analysis to generate a risk assessment.</p>
@@ -169,21 +204,21 @@ export default function EventDetailPanel({ event, loading, onClose }) {
           </section>
 
           <section className="detail-section">
-            <h3 className="detail-section__title">Event facts</h3>
+            <h3 className="detail-section__title">Event facts & Pivoting</h3>
             <dl className="detail-grid">
               <Field label="Timestamp" value={formatFullDateTime(event.timestamp)} mono wide />
-              <Field label="Event ID" value={event.event_id} mono />
-              <Field label="Source" value={event.log_source} />
+              <Field label="Event ID" value={event.event_id} mono onPivot={onPivot} />
+              <Field label="Source" value={event.log_source} onPivot={onPivot} />
               <Field label="Provider" value={event.provider} wide />
-              <Field label="Host" value={event.computer} />
-              <Field label="User" value={event.user} />
+              <Field label="Host" value={event.computer} onPivot={onPivot} />
+              <Field label="User" value={event.user} onPivot={onPivot} />
               <Field label="Level" value={event.level} />
-              <Field label="Process" value={event.process_name} mono wide />
+              <Field label="Process" value={event.process_name} mono wide onPivot={onPivot} />
               <Field label="Process ID" value={event.process_id} mono />
-              <Field label="Parent process" value={event.parent_process} mono wide />
+              <Field label="Parent process" value={event.parent_process} mono wide onPivot={onPivot} />
               <Field label="Command line" value={event.command_line} mono wide />
-              <Field label="Source" value={network(event.source_ip, event.source_port)} mono />
-              <Field label="Destination" value={network(event.destination_ip, event.destination_port)} mono />
+              <Field label="Source IP" value={network(event.source_ip, event.source_port)} mono onPivot={event.source_ip ? () => onPivot(event.source_ip) : null} />
+              <Field label="Destination IP" value={network(event.destination_ip, event.destination_port)} mono onPivot={event.destination_ip ? () => onPivot(event.destination_ip) : null} />
             </dl>
           </section>
 
@@ -210,12 +245,16 @@ export default function EventDetailPanel({ event, loading, onClose }) {
               <div className="feature-grid">
                 <div className="feature-grid__row">
                   <span>Evidence SHA-256</span>
-                  <span className="mono" style={{ fontSize: '0.78rem', wordBreak: 'break-all' }}>{event.evidence_hash}</span>
+                  <span className="mono" style={{ fontSize: '0.78rem', wordBreak: 'break-all', color: 'var(--accent)' }}>
+                    {event.evidence_hash}
+                  </span>
                 </div>
                 {event.previous_hash && (
                   <div className="feature-grid__row">
                     <span>Chain Link (Previous)</span>
-                    <span className="mono" style={{ fontSize: '0.78rem', wordBreak: 'break-all' }}>{event.previous_hash}</span>
+                    <span className="mono" style={{ fontSize: '0.78rem', wordBreak: 'break-all' }}>
+                      {event.previous_hash}
+                    </span>
                   </div>
                 )}
               </div>

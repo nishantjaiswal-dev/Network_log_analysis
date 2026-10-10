@@ -1,0 +1,312 @@
+.report-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 12, 18, 0.78);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  animation: integrityFadeIn 180ms var(--ease);
+}
+
+.report-modal {
+  width: 100%;
+  max-width: 860px;
+  max-height: 90vh;
+  background: var(--bg-panel);
+  border: 1px solid var(--hairline-strong);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 28px 70px -16px rgba(0, 0, 0, 0.85);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: integritySlideUp 220ms var(--ease);
+}
+
+.report-modal__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  background: var(--bg-panel-raised);
+  border-bottom: 1px solid var(--hairline);
+  flex-shrink: 0;
+}
+
+.report-modal__title-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.report-modal__icon-wrap {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  background: var(--accent-soft);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.report-modal__title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-family: var(--font-display);
+}
+
+.report-modal__sub {
+  margin: 2px 0 0;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.report-modal__actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.report-paper {
+  padding: 32px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  background: var(--bg-inset);
+  color: var(--text-primary);
+}
+
+.report-doc-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-bottom: 20px;
+  border-bottom: 2px solid var(--hairline-strong);
+}
+
+.report-doc-brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.report-seal {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 2px solid var(--accent);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.report-doc-title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  font-family: var(--font-display);
+}
+
+.report-doc-subtitle {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.report-meta-box {
+  text-align: right;
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.report-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.report-section-title {
+  margin: 0;
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--accent);
+  border-bottom: 1px solid var(--hairline);
+  padding-bottom: 6px;
+}
+
+.report-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.report-metric-tile {
+  background: var(--bg-panel);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+}
+
+.report-metric-label {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.report-metric-value {
+  font-size: 1.4rem;
+  margin-top: 4px;
+  color: var(--text-primary);
+}
+
+.report-iocs-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.report-ioc-box {
+  background: var(--bg-panel);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+}
+
+.report-ioc-box h4 {
+  margin: 0 0 8px;
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+}
+
+.report-ioc-box ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: 120px;
+  overflow-y: auto;
+  font-size: 0.76rem;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.report-ioc-box li {
+  padding: 3px 6px;
+  background: var(--bg-inset);
+  border-radius: var(--radius-sm);
+  word-break: break-all;
+}
+
+.report-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+  background: var(--bg-panel);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.report-table th {
+  text-align: left;
+  padding: 10px 12px;
+  background: var(--bg-panel-raised);
+  border-bottom: 1px solid var(--hairline);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.report-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--hairline-soft);
+  vertical-align: top;
+}
+
+.report-table-note {
+  margin: 4px 0 0;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.report-cert-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 16px 20px;
+  background: var(--bg-panel);
+  border: 1px solid var(--hairline-strong);
+  border-radius: var(--radius-sm);
+}
+
+.report-cert-icon {
+  color: var(--accent);
+  margin-top: 2px;
+}
+
+.report-cert-box h4 {
+  margin: 0 0 4px;
+  font-size: 0.85rem;
+  color: var(--text-primary);
+}
+
+.report-cert-box p {
+  margin: 0 0 8px;
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+.report-cert-hash {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .report-overlay {
+    position: static;
+    background: none;
+    padding: 0;
+  }
+  .report-modal {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    max-width: 100%;
+    max-height: none;
+    border: none;
+    box-shadow: none;
+    background: white !important;
+    color: black !important;
+  }
+  .report-paper, .report-paper * {
+    visibility: visible;
+    color: #111 !important;
+    background: white !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .report-metric-tile, .report-ioc-box, .report-table, .report-cert-box {
+    border: 1px solid #ccc !important;
+  }
+}

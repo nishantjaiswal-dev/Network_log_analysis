@@ -96,7 +96,7 @@ function CollectOptions({ options, onChange, hostOs, onClose }) {
 
 export default function Header({
   host, onLoadDemo, onCollect, onSafeIncident, onRunAnalysis, busy, lastAction, unanalyzedCount, sourceLabel,
-  collectOptions, onCollectOptionsChange,
+  collectOptions, onCollectOptionsChange, onOpenIntegrity, onOpenReport,
 }) {
   const [optionsOpen, setOptionsOpen] = useState(false);
   const canCollect = Boolean(host && host.live_collection_supported);
@@ -175,6 +175,28 @@ export default function Header({
               {unanalyzedCount > 999 ? '999+' : unanalyzedCount}
             </span>
           )}
+        </button>
+
+        <div className="header-divider" />
+
+        <button
+          className="btn btn--secondary"
+          onClick={onOpenIntegrity}
+          disabled={host === null}
+          title="Verify cryptographic SHA-256 chain of custody and tamper detection"
+        >
+          <Icon name="lock" />
+          <span>Audit integrity</span>
+        </button>
+
+        <button
+          className="btn btn--secondary"
+          onClick={onOpenReport}
+          disabled={host === null}
+          title="Generate printable forensic dossier case report"
+        >
+          <Icon name="fileText" />
+          <span>Export dossier</span>
         </button>
       </div>
     </header>

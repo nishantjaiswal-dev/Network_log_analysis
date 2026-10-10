@@ -311,6 +311,69 @@
   color: var(--text-primary);
 }
 
+/* --- score breakdown bar & tactics -------------------------------- */
+.score-breakdown-bar {
+  display: flex;
+  height: 4px;
+  background: var(--hairline);
+  border-radius: 2px;
+  overflow: hidden;
+  margin: 6px 0 4px;
+  gap: 1px;
+}
+.score-breakdown-bar__ml {
+  background: var(--accent);
+  border-radius: 2px 0 0 2px;
+}
+.score-breakdown-bar__rules {
+  background: var(--risk-high);
+  border-radius: 0 2px 2px 0;
+}
+
+.reason-text-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
+}
+
+.detail-tactic-chip {
+  align-self: flex-start;
+  padding: 1px 6px;
+  border-radius: 3px;
+  background: rgba(232, 116, 59, 0.15);
+  color: var(--risk-high);
+  border: 1px solid rgba(232, 116, 59, 0.3);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.detail-field__label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.pivot-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 1px 6px;
+  border-radius: 3px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  border: 1px solid var(--accent-line);
+  font-size: 0.68rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--dur);
+}
+.pivot-btn:hover {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
 /* --- drawer mode on narrower screens ------------------------------ */
 @media (max-width: 1100px) {
   .detail-panel--empty {

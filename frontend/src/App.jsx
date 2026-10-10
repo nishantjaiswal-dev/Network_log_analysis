@@ -9,6 +9,8 @@ import DataSourceSelector from './components/DataSourceSelector';
 import WorkflowSteps from './components/WorkflowSteps';
 import Notices from './components/Notices';
 import EmptyState from './components/EmptyState';
+import IntegrityModal from './components/IntegrityModal';
+import ReportModal from './components/ReportModal';
 import { DATA_SOURCE_OPTIONS, getDataSourceOption, sourceForHost } from './dataSources';
 import { pluralize } from './format';
 import './App.css';
@@ -33,6 +35,10 @@ export default function App() {
   const [lastAction, setLastAction] = useState(null);
   const [notices, setNotices] = useState([]);
   const [collectOptions, setCollectOptions] = useState({ max_events_per_channel: 200, last: '1h', include_sysmon: false });
+  const [integrityOpen, setIntegrityOpen] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
+  const [timeFilter, setTimeFilter] = useState(null);
+  const [tableSearchQuery, setTableSearchQuery] = useState('');
   const selectionRequest = useRef(0);
 
   const selectedSource = getDataSourceOption(dataSource);
@@ -214,6 +220,12 @@ export default function App() {
   const unanalyzedCount = stats ? stats.unanalyzed_events : 0;
   const scopeEmpty = stats && stats.total_events === 0;
 
+  function handlePivot(val) {
+    setTableSearchQuery(val);
+    const el = document.getElementById('main');
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
+  }
+
   return (
     <div className="app-shell">
       <a className="skip-link" href="#main">Skip to events</a>
@@ -229,6 +241,8 @@ export default function App() {
         sourceLabel={selectedSource.label}
         collectOptions={collectOptions}
         onCollectOptionsChange={setCollectOptions}
+        onOpenIntegrity={() => setIntegrityOpen(true)}
+        onOpenReport={() => setReportOpen(true)}
       />
 
       <div className="app-content">
@@ -252,7 +266,13 @@ export default function App() {
           <>
             <section className="panel trace" aria-label="Incident trace">
               <OverviewCards stats={stats} />
-              <Timeline events={timelineEvents} selectedId={selectedId} onSelect={handleEventSelect} />
+              <Timeline
+                events={timelineEvents}
+                selectedId={selectedId}
+                onSelect={handleEventSelect}
+                timeFilter={timeFilter}
+                onTimeFilterChange={setTimeFilter}
+              />
             </section>
 
             <main className="app-main" id="main">
@@ -265,17 +285,36 @@ export default function App() {
                 onChangeMinRiskLevel={setMinRiskLevel}
                 loading={loading}
                 hasUnanalyzed={unanalyzedCount > 0}
+                timeFilter={timeFilter}
+                onClearTimeFilter={() => setTimeFilter(null)}
+                query={tableSearchQuery}
+                onQueryChange={setTableSearchQuery}
               />
               <EventDetailPanel
                 key={selectedEvent?.id ?? (selectedId != null ? `loading-${selectedId}` : 'none')}
                 event={selectedEvent}
                 loading={selectedId != null && !selectedEvent}
                 onClose={closeDetail}
+                onPivot={handlePivot}
               />
             </main>
           </>
         )}
       </div>
+
+      <IntegrityModal
+        isOpen={integrityOpen}
+        onClose={() => setIntegrityOpen(false)}
+      />
+
+      <ReportModal
+        isOpen={reportOpen}
+        onClose={() => setReportOpen(false)}
+        stats={stats}
+        suspiciousEvents={suspicious.events}
+        host={host}
+        dataSourceLabel={selectedSource.label}
+      />
 
       <footer className="app-footer">
         Runs entirely on this machine. Anomaly detection uses an Isolation Forest; every risk point is tied to a named, auditable reason.

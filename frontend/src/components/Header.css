@@ -205,6 +205,25 @@
   place-items: center;
 }
 
+.header-divider {
+  width: 1px;
+  height: 24px;
+  background: var(--hairline-strong);
+  margin: 0 4px;
+}
+
+.btn--secondary {
+  background: var(--bg-inset);
+  border-color: var(--hairline-strong);
+  color: var(--text-secondary);
+}
+
+.btn--secondary:hover:not(:disabled) {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+  border-color: var(--accent-line);
+}
+
 
 @media (max-width: 1180px) {
   .app-header {

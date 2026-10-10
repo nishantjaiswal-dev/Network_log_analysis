@@ -27,6 +27,8 @@ React Dashboard
 
 Everything runs **locally**. No cloud services are used or required.
 
+> For an in-depth breakdown of the pipeline, mathematical formulations, ML scoring, and tech stack, see **[TECHNICAL_DOCUMENTATION.md](file:///c:/Users/admin/setup/AI%20LOG%20FORENCIS/AI_DataLog_Forensics/TECHNICAL_DOCUMENTATION.md)**.
+
 ---
 
 ## Repository layout
